@@ -11,6 +11,8 @@ namespace Catalog.API.Infrastructure
         {
             services.AddScoped<IDbContext, DbContext>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddExceptionHandler<GlobalExceptionHandler>();
+            services.AddProblemDetails();
             services.AddAutoMapper(typeof(MapperProfile));
             return services;
         }

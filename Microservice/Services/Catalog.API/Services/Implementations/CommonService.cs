@@ -12,12 +12,10 @@ namespace Catalog.API.Services.Implementation
     {
         private readonly IDbContext _context;
         private readonly IMongoCollection<T> _collection;
-        private readonly ILogger _logger;
         private readonly IMapper _mapper;
 
-        public CommonService(IDbContext context, ILogger logger, IMapper mapper)
+        public CommonService(IDbContext context, IMapper mapper)
         {
-            _logger = logger;
             _mapper = mapper;
             _context = context;
             _collection = _context.GetCollection<T>(typeof(T).Name);
@@ -25,180 +23,92 @@ namespace Catalog.API.Services.Implementation
 
         public async Task<U?> GetByIdAsync<U>(string id, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var objectId = new ObjectId(id);
-                var filter = Builders<T>.Filter.Eq("_id", objectId);
-                var value = await (await QueryAsync(filter, cancellationToken)).FirstOrDefaultAsync(cancellationToken);
-                return _mapper.Map<U>(value);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, typeof(T).Name);
-                return default(U);
-            }
+            var objectId = new ObjectId(id);
+            var filter = Builders<T>.Filter.Eq("_id", objectId);
+            var value = await (await QueryAsync(filter, cancellationToken)).FirstOrDefaultAsync(cancellationToken);
+            return _mapper.Map<U>(value);
         }
 
         public async Task<U?> FindOneAsync<U>(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var filter =  Builders<T>.Filter.Where(expression);
-                var value = await (await QueryAsync(filter, cancellationToken)).FirstOrDefaultAsync(cancellationToken);
-                return _mapper.Map<U>(value);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, typeof(T).Name);
-                return default(U);
-            }
+            var filter = Builders<T>.Filter.Where(expression);
+            var value = await (await QueryAsync(filter, cancellationToken)).FirstOrDefaultAsync(cancellationToken);
+            return _mapper.Map<U>(value);
         }
 
         public virtual async Task<List<U>?> GetAllAsync<U>(Expression<Func<T, bool>>? expression = null, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var filter = expression is not null ? Builders<T>.Filter.Where(expression) : Builders<T>.Filter.Where(_ => true);
-                var value = await (await QueryAsync(filter, cancellationToken)).ToListAsync(cancellationToken);
-                return _mapper.Map<List<U>>(value);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, typeof(T).Name);
-                return default(List<U>);
-            }
+            var filter = expression is not null ? Builders<T>.Filter.Where(expression) : Builders<T>.Filter.Where(_ => true);
+            var value = await (await QueryAsync(filter, cancellationToken)).ToListAsync(cancellationToken);
+            return _mapper.Map<List<U>>(value);
         }
 
         public async Task<U?> InsertOneAsync<U>(U uEntity, T? tEntity = null, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var mappedValue = _mapper.Map<T>(uEntity);
-                await _collection.InsertOneAsync(mappedValue, null, cancellationToken);
-                return _mapper.Map<U>(mappedValue);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, typeof(T).Name);
-                return default(U);
-            }
+            var mappedValue = _mapper.Map<T>(uEntity);
+            await _collection.InsertOneAsync(mappedValue, null, cancellationToken);
+            return _mapper.Map<U>(mappedValue);
         }
 
         public async Task<Unit> ReplaceOneAsync<U>(string id, U uEntity, T? tEntity = null, CancellationToken cancellationToken = default)
         {
-            try
+            var objectId = new ObjectId(id);
+            var filter = Builders<T>.Filter.Eq("_id", objectId);
+            var value = await (await QueryAsync(filter, cancellationToken)).FirstOrDefaultAsync(cancellationToken);
+
+            if (value is null)
             {
-                var objectId = new ObjectId(id);
-                var filter = Builders<T>.Filter.Eq("_id", objectId);
-                var value = await (await QueryAsync(filter, cancellationToken)).FirstOrDefaultAsync(cancellationToken);
-
-                if (value is null)
-                {
-                    return new()
-                    {
-                        StatusCode = HttpStatusCodes.NotFound,
-                        IsSuccess = false,
-                        Message = "Not found!"
-                    };
-                }
-                var mappedValue = _mapper.Map<U, T>(uEntity, value);
-
-                await _collection.ReplaceOneAsync(filter, mappedValue, options: new ReplaceOptions(), cancellationToken);
-
-                return new()
-                {
-                    StatusCode = HttpStatusCodes.OK,
-                    IsSuccess = true,
-                    Message = "Successfully updated!"
-                };
+                throw new BadHttpRequestException($"{id} not found!");
             }
-            catch (Exception ex)
+
+            var mappedValue = _mapper.Map<U, T>(uEntity, value);
+
+            await _collection.ReplaceOneAsync(filter, mappedValue, options: new ReplaceOptions(), cancellationToken);
+
+            return new()
             {
-                _logger.LogError(ex, typeof(T).Name);
-                return new()
-                {
-                    StatusCode = HttpStatusCodes.InternalServerError,
-                    IsSuccess = false,
-                    Message = ex.Message
-                };
-            }
+                StatusCode = HttpStatusCodes.OK,
+                IsSuccess = true,
+                Message = "Successfully updated!"
+            };
         }
 
         public async Task<Unit> DeleteOneAsync(string id, CancellationToken cancellationToken = default)
         {
-            try
+            var objectId = new ObjectId(id);
+            var filter = Builders<T>.Filter.Eq("_id", objectId);
+            var value = await (await QueryAsync(filter, cancellationToken)).FirstOrDefaultAsync(cancellationToken);
+
+            if (value is null)
             {
-                var objectId = new ObjectId(id);
-                var filter = Builders<T>.Filter.Eq("_id", objectId);
-                var value = await (await QueryAsync(filter, cancellationToken)).FirstOrDefaultAsync(cancellationToken);
-
-                if (value is null)
-                {
-                    return new()
-                    {
-                        StatusCode = HttpStatusCodes.NotFound,
-                        IsSuccess = false,
-                        Message = "Not found!"
-                    };
-                }
-
-                await _collection.DeleteOneAsync(filter, null, cancellationToken);
-
-                return new()
-                {
-                    StatusCode = HttpStatusCodes.OK,
-                    IsSuccess = true,
-                    Message = "Successfully deleted!"
-                };
+                throw new BadHttpRequestException($"{id} not found!");
             }
-            catch (Exception ex)
+
+            await _collection.DeleteOneAsync(filter, null, cancellationToken);
+
+            return new()
             {
-                _logger.LogError(ex, typeof(T).Name);
-                return new()
-                {
-                    StatusCode = HttpStatusCodes.InternalServerError,
-                    IsSuccess = false,
-                    Message = ex.Message
-                };
-            }
+                StatusCode = HttpStatusCodes.OK,
+                IsSuccess = true,
+                Message = "Successfully deleted!"
+            };
         }
 
         public virtual async Task<Unit> DeleteManyAsync(Expression<Func<T, bool>>? expression = null, CancellationToken cancellationToken = default)
         {
-            try
+            var filter = expression is not null ? Builders<T>.Filter.Where(expression) : Builders<T>.Filter.Where(_ => true);
+            await _collection.DeleteManyAsync(filter, null, cancellationToken);
+            return new()
             {
-                var filter = expression is not null ? Builders<T>.Filter.Where(expression) : Builders<T>.Filter.Where(_ => true);
-                await _collection.DeleteManyAsync(filter, null, cancellationToken);
-                return new()
-                {
-                    StatusCode = HttpStatusCodes.OK,
-                    IsSuccess = true,
-                    Message = "Successfully deleted!"
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, typeof(T).Name);
-                return new()
-                {
-                    StatusCode = HttpStatusCodes.InternalServerError,
-                    IsSuccess = false,
-                    Message = ex.Message
-                };
-            }
+                StatusCode = HttpStatusCodes.OK,
+                IsSuccess = true,
+                Message = "Successfully deleted!"
+            };
         }
 
         protected async Task<IAsyncCursor<T>> QueryAsync(FilterDefinition<T> filter, CancellationToken cancellationToken)
         {
-            try
-            {
-                return await _collection.FindAsync<T>(filter, null, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, typeof(T).Name);
-                return default(IAsyncCursor<T>);
-            }
+            return await _collection.FindAsync<T>(filter, null, cancellationToken);
         }
     }
 }

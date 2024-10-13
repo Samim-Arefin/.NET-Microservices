@@ -10,40 +10,23 @@ namespace Catalog.API.Services.Implementations
 {
     public class ProductService : CommonService<Product>, IProductService
     {
-        private readonly ILogger _logger;
-        public ProductService(IDbContext context, ILogger<Product> logger, IMapper mapper) : base(context, logger, mapper)
+        public ProductService(IDbContext context, IMapper mapper) : base(context, mapper)
         {
-            _logger = logger;
+
         }
 
         public async Task<ProductDto?> GetProductByNameAsync(string name)
         {
-            try
-            {
-                Expression<Func<Product, bool>> filter = product => string.Equals(product.Name, name, StringComparison.OrdinalIgnoreCase);
-                var product = await FindOneAsync<ProductDto>(filter);
-                return product;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                return null;
-            }
+            Expression<Func<Product, bool>> filter = product => string.Equals(product.Name, name, StringComparison.OrdinalIgnoreCase);
+            var product = await FindOneAsync<ProductDto>(filter);
+            return product;
         }
 
         public async Task<List<ProductDto>?> GetProductByCategoryNameAsync(string categoryName)
         {
-            try
-            {
-                Expression<Func<Product, bool>> filter = product => string.Equals(product.CategoryName, categoryName, StringComparison.OrdinalIgnoreCase);
-                var product = await GetAllAsync<ProductDto>(filter);
-                return product;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                return new();
-            }
+            Expression<Func<Product, bool>> filter = product => string.Equals(product.CategoryName, categoryName, StringComparison.OrdinalIgnoreCase);
+            var product = await GetAllAsync<ProductDto>(filter);
+            return product;
         }
     }
 }
