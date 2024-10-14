@@ -15,17 +15,17 @@ namespace Catalog.API.Services.Implementations
 
         }
 
-        public async Task<ProductDto?> GetProductByNameAsync(string name)
+        public async Task<ProductDto?> GetProductByNameAsync(string name, CancellationToken cancellationToken = default)
         {
             Expression<Func<Product, bool>> filter = product => string.Equals(product.Name, name, StringComparison.OrdinalIgnoreCase);
-            var product = await FindOneAsync<ProductDto>(filter);
+            var product = await FindOneAsync<ProductDto>(filter, cancellationToken);
             return product;
         }
 
-        public async Task<List<ProductDto>?> GetProductByCategoryNameAsync(string categoryName)
+        public async Task<List<ProductDto>?> GetProductByCategoryNameAsync(string categoryName, CancellationToken cancellationToken = default)
         {
             Expression<Func<Product, bool>> filter = product => string.Equals(product.CategoryName, categoryName, StringComparison.OrdinalIgnoreCase);
-            var product = await GetAllAsync<ProductDto>(filter);
+            var product = await GetAllAsync<ProductDto>(filter, cancellationToken);
             return product;
         }
     }
