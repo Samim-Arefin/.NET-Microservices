@@ -9,8 +9,8 @@ namespace Cart.API.Services.Implementations
     public class RedisCacheService : IRedisCacheService
     {
         private readonly IDistributedCache _redisCache;
-        public RedisCacheService(IDistributedCache  redisCache) => 
-            _redisCache = redisCache;
+        public RedisCacheService(IDistributedCache  redisCache) 
+            => _redisCache = redisCache;
        
         public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
         {

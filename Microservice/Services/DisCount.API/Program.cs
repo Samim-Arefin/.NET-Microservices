@@ -1,4 +1,4 @@
-using Cart.API.Infrastructure;
+using Discount.API.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Configuration.GetSection("Settings").Bind(AppSettings.Settings);
 builder.Services.RegisterServices();
+
 
 var app = builder.Build();
 
