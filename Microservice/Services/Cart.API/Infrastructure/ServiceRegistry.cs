@@ -1,5 +1,6 @@
 ﻿using Cart.API.Services.Implementations;
 using Cart.API.Services.Interfaces;
+using Discount.gRPC.Protos;
 using StackExchange.Redis;
 
 namespace Cart.API.Infrastructure
@@ -18,9 +19,14 @@ namespace Cart.API.Infrastructure
                 };
             });
 
+            services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
+                 options => options.Address = new Uri(AppSettings.GrpcSettings.DiscountGrpcUri));
+
             services.AddScoped<IRedisCacheService, RedisCacheService>();
+            services.AddScoped<IDiscountgRPCService, DiscountgRPCService>();
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
+
             return services;
         }
     }

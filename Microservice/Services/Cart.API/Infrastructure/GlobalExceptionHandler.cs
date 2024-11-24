@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Shared.API.Response;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 
 namespace Cart.API.Infrastructure
@@ -14,22 +15,13 @@ namespace Cart.API.Infrastructure
         {
             _logger.LogError($"An error occurred while processing your request: {exception.Message}", exception);
 
-            var errorResponse = new ErrorResponse
+            ErrorResponse errorResponse = exception switch
             {
-                Message = exception.Message
+                ValidationException => new(statusCode: (int)HttpStatusCode.BadRequest, title: exception.GetType().Name, message: exception.Message),
+                BadHttpRequestException => new(statusCode: (int)HttpStatusCode.BadRequest, title: exception.GetType().Name, message: exception.Message),
+                FileNotFoundException => new(statusCode: (int)HttpStatusCode.NotFound, title: exception.GetType().Name, message: exception.Message),
+                _ => new(statusCode: (int)HttpStatusCode.InternalServerError, title: "Internal Server Error", message: exception.Message)
             };
-
-            switch (exception)
-            {
-                case BadHttpRequestException:
-                    errorResponse.StatusCode = (int)HttpStatusCode.BadRequest;
-                    errorResponse.Title = exception.GetType().Name;
-                    break;
-                default:
-                    errorResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    errorResponse.Title = "Internal Server Error";
-                    break;
-            }
 
             httpContext.Response.StatusCode = errorResponse.StatusCode;
             await httpContext

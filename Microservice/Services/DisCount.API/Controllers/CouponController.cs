@@ -21,13 +21,13 @@ namespace Discount.API.Controllers
         public async Task<IActionResult> CreateCoupon(CouponDto coupon)
             => Ok(await _couponService.CreateCouponAsync(coupon));
 
-        [HttpPut, Route("{id}")]
-        public async Task<IActionResult> UpdateCoupon(Guid id, CouponDto coupon)
-            => Ok(await _couponService.UpdateCouponAsync(id, coupon));
+        [HttpPut, Route("{productId}")]
+        public async Task<IActionResult> UpdateCoupon(string productId, CouponDto coupon)
+            => Ok(await _couponService.UpdateCouponAsync(productId, coupon));
 
-        [HttpDelete, Route("{id}")]
-        public async Task<IActionResult> DeleteCoupon(Guid id)
-            => Ok(await _couponService.DeleteCouponAsync(id));
+        [HttpDelete, Route("{productId}")]
+        public async Task<IActionResult> DeleteCoupon(string productId)
+            => Ok(await _couponService.DeleteCouponAsync(productId));
 
     }
 }

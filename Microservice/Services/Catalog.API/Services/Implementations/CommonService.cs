@@ -5,6 +5,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Shared.API.Response;
 using System.Linq.Expressions;
+using System.Net;
 
 namespace Catalog.API.Services.Implementation
 {
@@ -65,7 +66,7 @@ namespace Catalog.API.Services.Implementation
 
             await _collection.ReplaceOneAsync(filter, mappedValue, options: new ReplaceOptions(), cancellationToken);
 
-            return new(statusCode: HttpStatusCodes.OK, isSuccess: true, message: "Successfully updated!");
+            return new(statusCode: (int)HttpStatusCode.OK, isSuccess: true, message: "Successfully updated!");
         }
 
         public async Task<Unit> DeleteOneAsync(string id, CancellationToken cancellationToken = default)
@@ -81,7 +82,7 @@ namespace Catalog.API.Services.Implementation
 
             await _collection.DeleteOneAsync(filter, null, cancellationToken);
 
-            return new(statusCode: HttpStatusCodes.OK, isSuccess: true, message: "Successfully deleted!");
+            return new(statusCode: (int)HttpStatusCode.OK, isSuccess: true, message: "Successfully deleted!");
         }
 
         public virtual async Task<Unit> DeleteManyAsync(Expression<Func<T, bool>>? expression = null, CancellationToken cancellationToken = default)
@@ -90,7 +91,7 @@ namespace Catalog.API.Services.Implementation
             await _collection.DeleteManyAsync(filter, null, cancellationToken);
             return new()
             {
-                StatusCode = HttpStatusCodes.OK,
+                StatusCode = (int)HttpStatusCode.OK,
                 IsSuccess = true,
                 Message = "Successfully deleted!"
             };

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Shared.API.Response;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Net;
 
 namespace Cart.API.Services.Implementations
 {
@@ -33,7 +34,7 @@ namespace Cart.API.Services.Implementations
 
             await _redisCache.RemoveAsync(key, cancellationToken);
 
-            return new(statusCode: HttpStatusCodes.OK, isSuccess: true, message: "Successfully removed!");
+            return new(statusCode: (int)HttpStatusCode.OK, isSuccess: true, message: "Successfully removed!");
         }
 
         public async Task<Unit> SetAsync<T>(string key, T entity, CancellationToken cancellationToken = default)
@@ -44,9 +45,9 @@ namespace Cart.API.Services.Implementations
 
             return string.IsNullOrEmpty(hasValue)
             ?
-            new(statusCode: HttpStatusCodes.OK, isSuccess: true, message: "Successfully added!")
+            new(statusCode: (int)(int)HttpStatusCode.OK, isSuccess: true, message: "Successfully added!")
             : 
-            new(statusCode: HttpStatusCodes.OK, isSuccess: true, message: "Successfully updated!");
+            new(statusCode: (int)HttpStatusCode.OK, isSuccess: true, message: "Successfully updated!");
         }
 
         private async Task<string?> Haskey(string key, CancellationToken cancellationToken) => 
