@@ -10,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Configuration.GetSection("Settings").Bind(AppSettings.Settings);
+builder.Configuration.GetSection("GrpcSettings").Bind(AppSettings.GrpcSettings);
 builder.Services.RegisterServices();
 
 var app = builder.Build();

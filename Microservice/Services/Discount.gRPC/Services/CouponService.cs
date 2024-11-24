@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using Discount.API.Entities;
+using Discount.gRPC.Entities;
 using Shared.API.DtoModels;
 using Shared.API.Response;
 using System.Net;
 
-namespace Discount.API.Services
+namespace Discount.gRPC.Services
 {
     public interface ICouponService
     {
@@ -38,14 +38,14 @@ namespace Discount.API.Services
                     Amount = 0,
                 };
             }
-            
+
             return _mapper.Map<CouponDto>(hasCoupon);
         }
 
         public async Task<CouponDto> CreateCouponAsync(CouponDto coupon)
         {
             var hasCoupon = await FindCouponAsync(coupon.ProductId);
-            if(hasCoupon is not null)
+            if (hasCoupon is not null)
             {
                 return coupon;
             }
@@ -89,7 +89,7 @@ namespace Discount.API.Services
 
             return response > 0
                    ?
-                   new(statusCode: (int)(int)HttpStatusCode.OK, isSuccess: true, message: "Successfully updated!")
+                   new(statusCode: (int)HttpStatusCode.OK, isSuccess: true, message: "Successfully updated!")
                    :
                    new(statusCode: (int)HttpStatusCode.OK, isSuccess: false, message: "Coupon not found!");
         }
@@ -97,9 +97,9 @@ namespace Discount.API.Services
         public async Task<Unit> DeleteCouponAsync(string productId)
         {
             var coupon = await FindCouponAsync(productId);
-            if(coupon is null)
+            if (coupon is null)
             {
-                return new(statusCode: (int)(int)HttpStatusCode.OK, isSuccess: false, message: "Coupon not found!");
+                return new(statusCode: (int)HttpStatusCode.OK, isSuccess: false, message: "Coupon not found!");
             }
 
             var sql = "DELETE FROM COUPON WHERE ProductId = @productId";
