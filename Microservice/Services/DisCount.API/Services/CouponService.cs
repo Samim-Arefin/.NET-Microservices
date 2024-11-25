@@ -70,7 +70,7 @@ namespace Discount.API.Services
             var hasCoupon = await FindCouponAsync(productId);
             if (hasCoupon is null)
             {
-                return new(statusCode: (int)HttpStatusCode.OK, isSuccess: false, message: "Coupon not found!");
+                return new(statusCode: (int)HttpStatusCode.BadRequest, isSuccess: false, message: "Coupon not found!");
             }
 
             var param = new
@@ -91,7 +91,7 @@ namespace Discount.API.Services
                    ?
                    new(statusCode: (int)(int)HttpStatusCode.OK, isSuccess: true, message: "Successfully updated!")
                    :
-                   new(statusCode: (int)HttpStatusCode.OK, isSuccess: false, message: "Coupon not found!");
+                   new(statusCode: (int)HttpStatusCode.BadRequest, isSuccess: false, message: "Coupon not found!");
         }
 
         public async Task<Unit> DeleteCouponAsync(string productId)
@@ -99,7 +99,7 @@ namespace Discount.API.Services
             var coupon = await FindCouponAsync(productId);
             if(coupon is null)
             {
-                return new(statusCode: (int)(int)HttpStatusCode.OK, isSuccess: false, message: "Coupon not found!");
+                return new(statusCode: (int)(int)HttpStatusCode.BadRequest, isSuccess: false, message: "Coupon not found!");
             }
 
             var sql = "DELETE FROM COUPON WHERE ProductId = @productId";
@@ -109,7 +109,7 @@ namespace Discount.API.Services
                    ?
                    new(statusCode: (int)HttpStatusCode.OK, isSuccess: true, message: "Successfully deleted!")
                    :
-                   new(statusCode: (int)HttpStatusCode.OK, isSuccess: false, message: "Coupon not found!");
+                   new(statusCode: (int)HttpStatusCode.BadRequest, isSuccess: false, message: "Coupon not found!");
         }
 
         private async Task<Coupon> FindCouponAsync(string productId)
