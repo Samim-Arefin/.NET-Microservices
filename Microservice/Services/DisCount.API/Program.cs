@@ -11,7 +11,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Configuration.GetSection("Settings").Bind(AppSettings.Settings);
 builder.Services.RegisterServices();
-
+builder.Services.AddCorsPolicy();
 
 var app = builder.Build();
 
@@ -23,6 +23,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

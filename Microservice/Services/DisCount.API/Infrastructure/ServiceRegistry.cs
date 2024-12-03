@@ -14,5 +14,20 @@ namespace Discount.API.Infrastructure
             services.AddAutoMapper(typeof(MapperProfile));
             return services;
         }
+
+        public static IServiceCollection AddCorsPolicy(this IServiceCollection services)
+        {
+            services.AddCors(option =>
+            {
+                option.AddPolicy("CorsPolicy",
+                  policy =>
+                  {
+                      policy.AllowAnyOrigin()
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+                  });
+            });
+            return services;
+        }
     }
 }

@@ -1,4 +1,4 @@
-using Cart.API.Infrastructure;
+using Ordering.API.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Configuration.GetSection("Settings").Bind(AppSettings.Settings);
-builder.Configuration.GetSection("GrpcSettings").Bind(AppSettings.GrpcSettings);
-builder.Services.RegisterServices();
+builder.Services.RegisterServices(builder.Configuration);
 builder.Services.AddCorsPolicy();
 
 var app = builder.Build();

@@ -15,7 +15,7 @@ namespace Auth.API.Infrastructure
         {
             services.AddDbContext<AppDbContext>(options =>
                      {
-                          options.UseSqlServer(AppSettings.Settings.DBConnection);
+                          options.UseSqlServer(AppSettings.Settings.ConnectionStrings);
                      })
                     .AddIdentity<AppUser, AppRole>(options =>
                     {
@@ -65,7 +65,7 @@ namespace Auth.API.Infrastructure
             services.AddAuthorizationCore();
 
             services.AddScoped<IAuthenticationService, AuthenticationService>()
-                    .AddScoped<IEmailService, EmailService>();
+                    .AddTransient<IEmailService, EmailService>();
 
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();

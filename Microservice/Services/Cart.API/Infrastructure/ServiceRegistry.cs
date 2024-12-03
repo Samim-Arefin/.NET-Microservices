@@ -29,5 +29,20 @@ namespace Cart.API.Infrastructure
 
             return services;
         }
+
+        public static IServiceCollection AddCorsPolicy(this IServiceCollection services)
+        {
+            services.AddCors(option =>
+            {
+                option.AddPolicy("CorsPolicy",
+                  policy =>
+                  {
+                      policy.AllowAnyOrigin()
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+                  });
+            });
+            return services;
+        }
     }
 }
