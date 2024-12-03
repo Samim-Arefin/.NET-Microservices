@@ -1,4 +1,4 @@
-﻿namespace Auth.API.Infrastructure
+﻿namespace Ordering.Infrastructure.Extensions
 {
     public static class AppSettings
     {
@@ -9,11 +9,6 @@
     public class Settings
     {
         public string ConnectionStrings { get; set; }
-        public string AdminEmail { get; set; }
-        public string AdminPassword { get; set; }
-        public string ApiUri { get; set; }
-        public string ClientUri { get; set; }
-        public string TokenKey { get; set; }
     }
 
     public class EmailSettings

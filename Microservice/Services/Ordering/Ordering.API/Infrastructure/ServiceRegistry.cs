@@ -1,19 +1,16 @@
-﻿using Catalog.API.Data;
-using Catalog.API.Mapping;
-using Catalog.API.Services.Implementations;
-using Catalog.API.Services.Interfaces;
+﻿using Ordering.Application.Extensions;
+using Ordering.Infrastructure.Extensions;
 
-namespace Catalog.API.Infrastructure
+namespace Ordering.API.Infrastructure
 {
     public static class ServiceRegistry
     {
-        public static IServiceCollection RegisterServices(this IServiceCollection services)
+        public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddScoped<IDbContext, DbContext>();
-            services.AddScoped<IProductService, ProductService>();
+            services.AddApplicationServices();
+            services.AddInfrastructureRegisterServices(configuration);
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
-            services.AddAutoMapper(typeof(MapperProfile));
             return services;
         }
 
