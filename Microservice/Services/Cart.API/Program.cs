@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Configuration.GetSection("Settings").Bind(AppSettings.Settings);
 builder.Configuration.GetSection("GrpcSettings").Bind(AppSettings.GrpcSettings);
+builder.Configuration.GetSection("MessageBrokerSettings").Bind(AppSettings.MessageBrokerSettings);
 builder.Services.RegisterServices();
 builder.Services.AddCorsPolicy();
 

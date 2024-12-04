@@ -1,5 +1,9 @@
-﻿using Ordering.Application.Extensions;
+﻿using MassTransit;
+using Ordering.API.EventBusHandler;
+using Ordering.API.Mapping;
+using Ordering.Application.Extensions;
 using Ordering.Infrastructure.Extensions;
+using System.Reflection;
 
 namespace Ordering.API.Infrastructure
 {
@@ -11,6 +15,23 @@ namespace Ordering.API.Infrastructure
             services.AddInfrastructureRegisterServices(configuration);
             services.AddExceptionHandler<GlobalExceptionHandler>();
             services.AddProblemDetails();
+
+            services.AddAutoMapper(typeof(MapperProfile));
+
+            services.AddMassTransit(x =>
+            {
+                x.SetKebabCaseEndpointNameFormatter();
+
+                x.AddConsumer<CartCheckOutEventHandler>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(Settings.MessageBrokerSettings.Host);
+
+                    cfg.ConfigureEndpoints(context);
+                });
+            });
+
             return services;
         }
 

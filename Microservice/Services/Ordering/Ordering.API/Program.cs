@@ -9,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Configuration.GetSection("MessageBrokerSettings").Bind(Settings.MessageBrokerSettings);
 builder.Services.RegisterServices(builder.Configuration);
 builder.Services.AddCorsPolicy();
 
