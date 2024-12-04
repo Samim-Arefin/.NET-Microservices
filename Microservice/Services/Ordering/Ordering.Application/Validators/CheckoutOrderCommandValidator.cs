@@ -80,7 +80,6 @@ namespace Ordering.Application.Validators
                .WithMessage("Expiration date is required");
             
             RuleFor(o => o.CreatedBy)
-               .NotEmpty()
                .NotNull()
                .WithMessage("Created by is required");
         }

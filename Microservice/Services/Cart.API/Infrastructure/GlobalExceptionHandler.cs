@@ -18,6 +18,7 @@ namespace Cart.API.Infrastructure
             ErrorResponse errorResponse = exception switch
             {
                 ValidationException => new(statusCode: (int)HttpStatusCode.BadRequest, title: exception.GetType().Name, message: exception.Message),
+                ArgumentNullException => new(statusCode: (int)HttpStatusCode.BadRequest, title: exception.GetType().Name, message: exception.Message),
                 BadHttpRequestException => new(statusCode: (int)HttpStatusCode.BadRequest, title: exception.GetType().Name, message: exception.Message),
                 FileNotFoundException => new(statusCode: (int)HttpStatusCode.NotFound, title: exception.GetType().Name, message: exception.Message),
                 _ => new(statusCode: (int)HttpStatusCode.InternalServerError, title: "Internal Server Error", message: exception.Message)

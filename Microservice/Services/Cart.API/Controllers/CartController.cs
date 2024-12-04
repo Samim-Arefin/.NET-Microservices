@@ -9,12 +9,12 @@ namespace Cart.API.Controllers
     public class CartController : ControllerBase
     {
         private readonly IRedisCacheService _redisCacheService;
-        private readonly IDiscountgRPCService _discountgRPCService;
+        private readonly ICartCheckOutService _cartCheckOutService;
 
-        public CartController(IRedisCacheService redisCacheService, IDiscountgRPCService discountgRPCService) 
+        public CartController(IRedisCacheService redisCacheService, ICartCheckOutService cartCheckOutService) 
         {
             _redisCacheService = redisCacheService;
-            _discountgRPCService = discountgRPCService;
+            _cartCheckOutService = cartCheckOutService;
         }
 
         [HttpGet, Route("{key}")]
@@ -24,16 +24,11 @@ namespace Cart.API.Controllers
 
         [HttpPost]
         public async Task<IActionResult> UpdateCart(ShoppingCartDto shoppingCart, CancellationToken cancellationToken)
-        {
-            foreach (var shoppingCartItem in shoppingCart.ShoppingCartItems)
-            {
-                var coupon = await _discountgRPCService.GetDiscount(shoppingCartItem.ProductId);
-                shoppingCartItem.Price -= coupon.Amount;
-            }
+            => Ok(await _cartCheckOutService.UpdateCartItem(shoppingCart, cancellationToken));
 
-            var response = await _redisCacheService.SetAsync<ShoppingCartDto>(shoppingCart.UserName, shoppingCart, cancellationToken);
-            return Ok(response);
-        }
+        [HttpPost]
+        public async Task<IActionResult> Checkout(CartCheckOutDto cartCheckOut, CancellationToken cancellationToken) 
+            => Ok(await _cartCheckOutService.CartCheckOut(cartCheckOut, cancellationToken));
 
         [HttpDelete, Route("{key}")]
         public async Task<IActionResult> RemoveCart(string key, CancellationToken cancellationToken) 
