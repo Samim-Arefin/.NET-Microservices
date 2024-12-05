@@ -1,9 +1,9 @@
-﻿using MassTransit;
+﻿using JWTAuthentication.JWT;
+using MassTransit;
 using Ordering.API.EventBusHandler;
 using Ordering.API.Mapping;
 using Ordering.Application.Extensions;
 using Ordering.Infrastructure.Extensions;
-using System.Reflection;
 
 namespace Ordering.API.Infrastructure
 {
@@ -11,6 +11,9 @@ namespace Ordering.API.Infrastructure
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddJwtAuthentication();
+            services.AddAuthorization();
+
             services.AddApplicationServices();
             services.AddInfrastructureRegisterServices(configuration);
             services.AddExceptionHandler<GlobalExceptionHandler>();

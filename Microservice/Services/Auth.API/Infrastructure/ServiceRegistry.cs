@@ -1,11 +1,9 @@
 ﻿using Auth.API.Entities;
 using Auth.API.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using JWTAuthentication.JWT;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Shared.API.Enums;
-using System.Text;
 
 namespace Auth.API.Infrastructure
 {
@@ -43,26 +41,8 @@ namespace Auth.API.Infrastructure
                 options.TokenLifespan = TimeSpan.FromHours(1);
             });
 
-            services.AddAuthentication(option =>
-            {
-                option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-               .AddJwtBearer(option =>
-               {
-                   option.SaveToken = true;
-                   option.RequireHttpsMetadata = false;
-                   option.TokenValidationParameters = new TokenValidationParameters()
-                   {
-                       ValidateIssuer = true,
-                       ValidIssuer = AppSettings.Settings.ApiUri,
-                       ValidateAudience = false,
-                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.Settings.TokenKey))
-                   };
-               });
-
-            services.AddAuthorizationCore();
+            services.AddJwtAuthentication();
+            services.AddAuthorization();
 
             services.AddScoped<IAuthenticationService, AuthenticationService>()
                     .AddTransient<IEmailService, EmailService>();

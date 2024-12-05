@@ -2,6 +2,7 @@
 using Catalog.API.Mapping;
 using Catalog.API.Services.Implementations;
 using Catalog.API.Services.Interfaces;
+using JWTAuthentication.JWT;
 
 namespace Catalog.API.Infrastructure
 {
@@ -9,6 +10,9 @@ namespace Catalog.API.Infrastructure
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
+            services.AddJwtAuthentication();
+            services.AddAuthorization();
+
             services.AddScoped<IDbContext, DbContext>();
             services.AddScoped<IProductService, ProductService>();
             services.AddExceptionHandler<GlobalExceptionHandler>();

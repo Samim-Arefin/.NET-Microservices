@@ -1,4 +1,5 @@
 ﻿using Catalog.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.API.DtoModels;
 
@@ -6,6 +7,7 @@ namespace Catalog.API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -13,22 +15,22 @@ namespace Catalog.API.Controllers
             => _productService = productService;
 
         [HttpGet]
-        [ResponseCache(Duration = 10)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetProducts(CancellationToken cancellationToken) 
             => Ok(await _productService.GetAllAsync<ProductDto>(cancellationToken: cancellationToken));
 
         [HttpGet, Route("{id}")]
-        [ResponseCache(Duration = 10)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(string id, CancellationToken cancellationToken) 
             => Ok(await _productService.GetByIdAsync<ProductDto>(id, cancellationToken));
 
         [HttpGet, Route("{name}")]
-        [ResponseCache(Duration = 10)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetByName(string name, CancellationToken cancellationToken) 
             => Ok(await _productService.GetProductByNameAsync(name, cancellationToken));
 
         [HttpGet, Route("{categoryName}")]
-        [ResponseCache(Duration = 10)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetByCategoryName(string categoryName, CancellationToken cancellationToken) 
             => Ok(await _productService.GetProductByCategoryNameAsync(categoryName, cancellationToken));
 

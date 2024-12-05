@@ -47,10 +47,10 @@ namespace Auth.API.Services
 
             if (subject is EmailSubject.EmailConfirmation)
             {
-                uri = $"/api/Authentication/confirmEmail/{id}/{token}";
+                uri = $"/gateway/Authentication/confirmEmail/{id}/{token}";
                 content = $@"
                     <p>
-                        Please <a href='{AppSettings.Settings.ApiUri + uri}'> click here </a> to confirm your registration!
+                        Please <a href='{AppSettings.Settings.GatewayUri + uri}'> click here </a> to confirm your registration!
                     </p>";
             }
             else
@@ -64,7 +64,7 @@ namespace Auth.API.Services
 
             var builder = new BodyBuilder
             {
-                HtmlBody = content.Replace("\n", "<Br>")
+                HtmlBody = content.Replace("\n", "<br>")
             };
 
             message.Body = builder.ToMessageBody();

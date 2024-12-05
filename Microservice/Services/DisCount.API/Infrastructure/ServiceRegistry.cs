@@ -1,5 +1,6 @@
 ﻿using Discount.API.Mapping;
 using Discount.API.Services;
+using JWTAuthentication.JWT;
 
 namespace Discount.API.Infrastructure
 {
@@ -7,6 +8,9 @@ namespace Discount.API.Infrastructure
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
+            services.AddJwtAuthentication();
+            services.AddAuthorization();
+
             services.AddScoped<IDapperService, DapperService>();
             services.AddScoped<ICouponService, CouponService>();
             services.AddExceptionHandler<GlobalExceptionHandler>();

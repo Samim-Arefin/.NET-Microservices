@@ -47,7 +47,10 @@ namespace Discount.API.Services
             var hasCoupon = await FindCouponAsync(coupon.ProductId);
             if(hasCoupon is not null)
             {
-                return coupon;
+                return new()
+                {
+                    ProductId = "Already exists!",
+                };
             }
 
             var sql = "INSERT INTO COUPON(ProductId, ProductName, Description, Amount) " +
