@@ -1,4 +1,5 @@
 ﻿using Discount.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.API.DtoModels;
 
@@ -6,6 +7,7 @@ namespace Discount.API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class CouponController : ControllerBase
     {
         private readonly ICouponService _couponService;
@@ -13,7 +15,7 @@ namespace Discount.API.Controllers
             => _couponService = couponService;
 
         [HttpGet, Route("{productId}")]
-        [ResponseCache(Duration = 3)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetCoupon(string productId) 
             => Ok(await _couponService.GetCouponByProductIdAsync(productId));
 

@@ -11,6 +11,7 @@ using Shared.API.Models;
 using Shared.API.Enums;
 using Auth.API.Infrastructure;
 using System.Net;
+using JWTAuthentication.JWT;
 
 namespace Auth.API.Services
 {
@@ -348,9 +349,9 @@ namespace Auth.API.Services
                 authClaims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(AppSettings.Settings.TokenKey));
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTCredentials.TokenKey));
             var token = new JwtSecurityToken(
-              issuer: AppSettings.Settings.ApiUri,
+              issuer: JWTCredentials.ApiUri,
               expires: DateTime.Now.AddDays(3),
               claims: authClaims,
               signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256Signature)

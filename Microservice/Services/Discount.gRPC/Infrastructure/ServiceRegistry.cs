@@ -1,5 +1,6 @@
 ﻿using Discount.gRPC.Mapping;
 using Discount.gRPC.Services;
+using JWTAuthentication.JWT;
 
 namespace Discount.gRPC.Infrastructure
 {
@@ -7,6 +8,9 @@ namespace Discount.gRPC.Infrastructure
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
+            services.AddJwtAuthentication();
+            services.AddAuthorization();
+
             services.AddGrpc(options => 
             {
                 options.Interceptors.Add<ExceptionInterceptor>();

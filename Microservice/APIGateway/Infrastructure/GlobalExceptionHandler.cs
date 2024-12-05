@@ -1,10 +1,9 @@
-﻿using Grpc.Core;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Shared.API.Response;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 
-namespace Cart.API.Infrastructure
+namespace Auth.API.Infrastructure
 {
     public class GlobalExceptionHandler : IExceptionHandler
     {
@@ -18,9 +17,7 @@ namespace Cart.API.Infrastructure
 
             ErrorResponse errorResponse = exception switch
             {
-                RpcException rpcEx when rpcEx.StatusCode == StatusCode.PermissionDenied => new(statusCode: (int)HttpStatusCode.Forbidden, title: rpcEx.GetType().Name, message: "Bad gRPC response"),
                 ValidationException => new(statusCode: (int)HttpStatusCode.BadRequest, title: exception.GetType().Name, message: exception.Message),
-                ArgumentNullException => new(statusCode: (int)HttpStatusCode.BadRequest, title: exception.GetType().Name, message: exception.Message),
                 BadHttpRequestException => new(statusCode: (int)HttpStatusCode.BadRequest, title: exception.GetType().Name, message: exception.Message),
                 FileNotFoundException => new(statusCode: (int)HttpStatusCode.NotFound, title: exception.GetType().Name, message: exception.Message),
                 _ => new(statusCode: (int)HttpStatusCode.InternalServerError, title: "Internal Server Error", message: exception.Message)

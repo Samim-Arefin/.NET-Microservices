@@ -3,7 +3,6 @@ using MediatR;
 using Ordering.Application.Common.Persistence;
 using Ordering.Application.Queries;
 using Ordering.Application.Responses;
-using Ordering.Domain.Entities;
 
 namespace Ordering.Application.Handlers
 {

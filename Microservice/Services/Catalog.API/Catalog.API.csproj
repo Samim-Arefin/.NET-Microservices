@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\JWTAuthentication\JWTAuthentication.csproj" />
     <ProjectReference Include="..\Shared.API\Shared.API.csproj" />
   </ItemGroup>
 

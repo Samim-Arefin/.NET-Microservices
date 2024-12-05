@@ -2,6 +2,8 @@
 using Cart.API.Services.Implementations;
 using Cart.API.Services.Interfaces;
 using Discount.gRPC.Protos;
+using Grpc.Core;
+using JWTAuthentication.JWT;
 using MassTransit;
 using StackExchange.Redis;
 
@@ -11,6 +13,20 @@ namespace Cart.API.Infrastructure
     {
         public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
+            services.AddJwtAuthentication();
+            services.AddAuthorization();
+            services.AddHttpContextAccessor();
+
+            services.AddScoped<IRedisCacheService, RedisCacheService>()
+                    .AddScoped<IDiscountgRPCService, DiscountgRPCService>()
+                    .AddScoped<ICartCheckOutService, CartCheckOutService>()
+                    .AddScoped<ITokenProviderService, TokenProviderService>()
+                    .AddTransient<IEventBusService, EventBusService>();
+            services.AddExceptionHandler<GlobalExceptionHandler>();
+            services.AddProblemDetails();
+
+            services.AddAutoMapper(typeof(MapperProfile));
+
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = AppSettings.Settings.ConnectionStrings;
@@ -21,8 +37,21 @@ namespace Cart.API.Infrastructure
                 };
             });
 
-            services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
-                 options => options.Address = new Uri(AppSettings.GrpcSettings.DiscountGrpcUri));
+            services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(options =>
+            {
+                options.Address = new Uri(AppSettings.GrpcSettings.DiscountGrpcUri);
+            })
+            .AddCallCredentials(async (context, metadata, serviceProvider) =>
+            {
+                var provider = serviceProvider.GetRequiredService<ITokenProviderService>();
+                var token = await provider.GetTokenAsync();
+                metadata.Add("Authorization", $"Bearer {token}");
+            })
+            .ConfigureChannel(options =>
+            {
+                options.UnsafeUseInsecureChannelCallCredentials = true;
+            });
+
 
             services.AddMassTransit(x =>
             {
@@ -37,15 +66,6 @@ namespace Cart.API.Infrastructure
                     cfg.ConfigureEndpoints(context);
                 });
             });
-
-            services.AddScoped<IRedisCacheService, RedisCacheService>()
-                    .AddScoped<IDiscountgRPCService, DiscountgRPCService>()
-                    .AddScoped<ICartCheckOutService, CartCheckOutService>()
-                    .AddTransient<IEventBusService, EventBusService>();
-            services.AddExceptionHandler<GlobalExceptionHandler>();
-            services.AddProblemDetails();
-
-            services.AddAutoMapper(typeof(MapperProfile));
 
             return services;
         }

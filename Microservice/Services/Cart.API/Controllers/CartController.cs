@@ -1,4 +1,5 @@
 ﻿using Cart.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shared.API.DtoModels;
 
@@ -6,6 +7,7 @@ namespace Cart.API.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class CartController : ControllerBase
     {
         private readonly IRedisCacheService _redisCacheService;
@@ -18,8 +20,7 @@ namespace Cart.API.Controllers
         }
 
         [HttpGet, Route("{key}")]
-        [ResponseCache(Duration = 10)]
-        public async Task<IActionResult> GetCarts(string key, CancellationToken cancellationToken) 
+        public async Task<IActionResult> GetCarts(string key, CancellationToken cancellationToken)
             => Ok(await _redisCacheService.GetAsync<ShoppingCartDto>(key, cancellationToken));
 
         [HttpPost]
